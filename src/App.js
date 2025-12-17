@@ -1,90 +1,120 @@
 import React, { useState } from "react";
 
-const COLS = "ABCDEFGHIJ".split("");
-const ROWS = Array.from({ length: 10 }, (_, i) => i + 1);
+// Columns and rows configuration will bee:
+const columns = ["A","B","C","D","E","F","G","H","I","J"];
+const rows = [1,2,3,4,5,6,7,8,9,10];
 
-const createEmptyGrid = () => {
-  const grid = {};
-  COLS.forEach(c => {
-    ROWS.forEach(r => {
-      grid[`${c}${r}`] = { value: "", display: "" };
-    });
-  });
-  return grid;
-};
+// Creating initial empty spreadsheett:
+function initializeGrid() {
+  const data = {};
+
+  for (let c of columns) {
+    for (let r of rows) {
+      data[`${c}${r}`] = {
+        value: "",
+        display: ""
+      };
+    }
+  }
+
+  return data;
+}
 
 export default function App() {
-  const [cells, setCells] = useState(createEmptyGrid());
+  const [cells, setCells] = useState(initializeGrid());
 
-  const evaluateCell = (key, visited = new Set()) => {
-    if (visited.has(key)) return "#CIRCULAR";
-    visited.add(key);
+  // Evaluate a single cell value
+  const evaluateCell = (cellKey, grid, visitedCells = new Set()) => {
+    // Circular dependency check
+    if (visitedCells.has(cellKey)) {
+      return "#CIRCULAR";
+    }
 
-    const cell = cells[key];
-    if (!cell.value.startsWith("=")) return cell.value;
+    visitedCells.add(cellKey);
+
+    const currentCell = grid[cellKey];
+
+    // Normal value (not a formula)
+    if (!currentCell.value.startsWith("=")) {
+      return currentCell.value;
+    }
 
     try {
-      let expr = cell.value.slice(1);
+      let expression = currentCell.value.substring(1);
 
-      expr = expr.replace(/[A-J](10|[1-9])/g, ref => {
-        const val = evaluateCell(ref, new Set(visited));
-        if (val === "#CIRCULAR" || val === "#ERROR") {
-          throw new Error();
+      // Replace all cell references with their values
+      expression = expression.replace(/[A-J](10|[1-9])/g, ref => {
+        const refValue = evaluateCell(ref, grid, new Set(visitedCells));
+
+        if (refValue === "#CIRCULAR" || refValue === "#ERROR") {
+          throw new Error("Invalid reference");
         }
-        return Number(val) || 0;
+
+        return Number(refValue) || 0;
       });
 
+      // Evaluate final expression
       // eslint-disable-next-line no-eval
-      return eval(expr);
-    } catch {
+      return eval(expression);
+    } catch (err) {
       return "#ERROR";
     }
   };
 
-  const recompute = newCells => {
-    const updated = { ...newCells };
-    Object.keys(updated).forEach(k => {
-      updated[k].display = evaluateCell(k);
-    });
-    return updated;
+  // Recalculate all cells after any change in the grid by the user:
+  const recalculateGrid = updatedGrid => {
+    const newGrid = { ...updatedGrid };
+
+    for (let key in newGrid) {
+      newGrid[key].display = evaluateCell(key, newGrid);
+    }
+
+    return newGrid;
   };
 
-  const handleChange = (key, val) => {
-    const updated = {
+  // Handle input change
+  const handleInputChange = (cellKey, newValue) => {
+    const updatedGrid = {
       ...cells,
-      [key]: { ...cells[key], value: val }
+      [cellKey]: {
+        ...cells[cellKey],
+        value: newValue
+      }
     };
-    setCells(recompute(updated));
+
+    setCells(recalculateGrid(updatedGrid));
   };
 
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: "20px" }}>
       <h2>Spreadsheet Engine</h2>
 
-      <table border="1" cellPadding="5">
+      <table border="1" cellPadding="6">
         <thead>
           <tr>
             <th></th>
-            {COLS.map(c => (
-              <th key={c}>{c}</th>
+            {columns.map(col => (
+              <th key={col}>{col}</th>
             ))}
           </tr>
         </thead>
 
         <tbody>
-          {ROWS.map(r => (
-            <tr key={r}>
-              <th>{r}</th>
-              {COLS.map(c => {
-                const key = `${c}${r}`;
+          {rows.map(row => (
+            <tr key={row}>
+              <th>{row}</th>
+              {columns.map(col => {
+                const cellKey = `${col}${row}`;
                 return (
-                  <td key={key}>
+                  <td key={cellKey}>
                     <input
-                      style={{ width: 80 }}
-                      value={cells[key].value}
-                      onChange={e => handleChange(key, e.target.value)}
+                      style={{ width: "80px" }}
+                      value={cells[cellKey].value}
+                      onChange={e =>
+                        handleInputChange(cellKey, e.target.value)
+                      }
                     />
-                    <div>{cells[key].display}</div>
+                    <div>{cells[cellKey].display}</div>
                   </td>
                 );
               })}
@@ -95,3 +125,12 @@ export default function App() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
