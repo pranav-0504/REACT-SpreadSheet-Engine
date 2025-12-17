@@ -1,38 +1,109 @@
-.App {
+/* Reset & base styling */
+* {
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #f4f6f8;
+  color: #333;
+}
+
+/* Page container */
+div {
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* Title */
+h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Header cells */
+th {
+  background: #34495e;
+  color: #ffffff;
+  font-weight: 600;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #2c3e50;
+}
+
+/* Row header (numbers) */
+tbody th {
+  background: #ecf0f1;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+/* Table cells */
+td {
+  border: 1px solid #ddd;
+  padding: 6px;
+  text-align: center;
+  background: #fafafa;
+  transition: background 0.2s ease;
+}
+
+/* Hover effect */
+td:hover {
+  background: #f0f8ff;
+}
+
+/* Input box */
+input {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  outline: none;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* Input focus */
+input:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+/* Display value under input */
+td div {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #2c3e50;
+  min-height: 16px;
+}
+
+/* Error states */
+td div:contains("#ERROR"),
+td div:contains("#CIRCULAR") {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+/* Responsive support */
+@media (max-width: 768px) {
+  table {
+    font-size: 12px;
   }
-}
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
+  input {
+    font-size: 12px;
   }
 }
