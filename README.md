@@ -67,6 +67,6 @@ Updating `A1` to `10` automatically updates:
 
 ```bash
 git clone https://github.com/pranav-0504/REACT-SpreadSheet-Engine.git
-cd YOUR-REPO-NAME
+cd REACT-SpreadSheet-Engine
 npm install
 npm start
