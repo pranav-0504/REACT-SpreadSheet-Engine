@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./App.css";
 
 // Columns and rows configuration will bee:
 const columns = ["A","B","C","D","E","F","G","H","I","J"];
@@ -43,7 +44,7 @@ export default function App() {
       let expression = currentCell.value.substring(1);
 
       // Replace all cell references with their values
-      expression = expression.replace(/[A-J](10|[1-9])/g, ref => {
+      expression = expression.replace(/\b[A-J](10|[1-9])\b/g, ref => {
         const refValue = evaluateCell(ref, grid, new Set(visitedCells));
 
         if (refValue === "#CIRCULAR" || refValue === "#ERROR") {
@@ -87,7 +88,7 @@ export default function App() {
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>Spreadsheet Engine</h2>
+      <h2>Spreadsheet Engine [10x10 Grid] </h2>
 
       <table border="1" cellPadding="6">
         <thead>
